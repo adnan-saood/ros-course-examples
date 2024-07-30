@@ -1,0 +1,203 @@
+---
+layout: post
+title:  "Tutorial 1: Installation"
+date:   2024-07-30 19:12:49 +0200
+categories: basics
+---
+
+# Introduction
+
+
+This guide will help you install ROS Noetic on different operating systems: Ubuntu 20.04, Ubuntu 22.04, Windows WSL, and using Docker. Follow the instructions specific to your system.
+
+This is strictly for the use of the exercises and materials provided throughout the course. For real-world applications we may find setups a little different, but famiiar.
+
+# Table of Contents
+- [Ubuntu 20.04](#ubuntu-2004)
+- [Ubuntu 22.04](#ubuntu-2204)
+- [Windows WSL](#windows-wsl)
+- [Docker](#docker)
+
+---
+
+## Ubuntu 20.04
+
+1. **Setup your sources.list**
+
+   ```sh
+   sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-noetic.list'
+   ```
+  
+2. **Set up your keys**
+    ```sh
+    sudo apt install curl # if you haven't already installed curl
+    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+    ```
+
+3. **Update your package index**
+    ```sh
+    sudo apt update
+    ```
+
+4. **Install ROS Noetic**
+    ```sh
+    sudo apt install ros-noetic-desktop-full
+    ```
+
+5. **Initialize rosdep**
+    ```sh
+    sudo rosdep init
+    rosdep update
+    ```
+
+6. **Environment setup** _(Not recommended)_
+    ```sh
+    echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+    source ~/.bashrc
+    ```
+
+7. **Build tools for compiling ros nodes**
+    ```sh
+    sudo apt install python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+    ```
+
+## Ubuntu 22.04 & 24.04
+ROS1 does not officially support Ubuntu 22.04. For ROS2, consider using the latest ROS2 humble.
+
+For now it is essential to install ROS1 either via Windows WSL, a virtual machine with ubuntu20.04, or using Docker.
+
+## Windows (Only _Pro_ version)
+
+1. Install WSL and Ubuntu 20.04
+    - Follow the instructions from Microsoft's documentation to install WSL.
+    - Install Ubuntu 20.04 from the Microsoft Store.
+
+2. Open Ubuntu 20.04 in WSL and follow the Ubuntu 20.04 installation instructions above.
+
+3. Ensure **WSL2** is set as your default version
+
+    ```powershell
+    wsl --set-default-version 2
+    ```
+
+    > **Optional**: Install a GUI for your WSL environment
+
+## Docker (Any OS).
+The easiest and most versatile tool to run ROS applications. I recommend this option if you are comfortable with it, it has a steep learning curve though.
+
+1. Install Docker with Docker Compose
+
+    Follow the instructions from Docker's documentation to [install Docker](https://docs.docker.com/get-docker/).
+
+
+2. Create an empty directory and fill it with necessary files:
+
+    ```sh
+    DIR_NAME=ros-noetic-base
+
+    mkdir $DIR_NAME
+    cd $DIR_NAME
+
+    mkdir catkin_ws
+
+    touch Dockerfile
+    touch docker-compose.yml
+    ```
+
+3. Fill in the Config files for the image and container
+
+    - `Dockefile`
+
+      This file instructs Docker on how to build your image. You can edit it to your liking. This will build a docker "Image", this is like an ISO file that you can install as many times as you want. 
+
+      ```docker
+      FROM ros:noetic-ros-base-focal
+
+      ENV DEBIAN_FRONTEND=noninteractive
+      ENV TZ="Europe/Paris"
+
+      # Create user 'robot' and set up home directory
+      # Set the working directory to /dev
+
+      RUN useradd -m -s /bin/bash robot && echo "robot:robot" | chpasswd && adduser robot sudo
+      RUN usermod -aG sudo robot
+      RUN echo 'robot ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+      RUN newgrp sudo
+
+      RUN mkdir /catkin_ws && chown -R robot:robot /catkin_ws
+      WORKDIR /robot
+
+      USER robot
+
+      ENV DEBIAN_FRONTEND=noninteractive
+      ENV TZ="Europe/Paris"
+
+      # install ros packages
+      RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          ros-noetic-robot=1.5.0-1* \
+          && rm -rf /var/lib/apt/lists/*
+      ```
+
+    - `docker-compose.yml`
+
+      This will instruct docker on how to launch the image you wrote earlier as a __container__.
+      There are several things you can edit here to your liking. You can make the container and your computer on a separate network, or you can `mount` several folders of the host machine as folders inside the container. Beware, everything you do in a non-mounted folder will be erased upon restart, this is why we are mounting the `./catkin_ws` folder. 
+
+      ```yaml
+      version: '3.8'
+
+      services:
+        ros-basic-noetic:
+          build:
+            context: .
+            dockerfile: Dockerfile
+          image: ros-basic
+          network_mode: "host"
+          environment:
+              - X11_ENABLED=1
+              - DISPLAY=${DISPLAY}
+              - QT_X11_NO_MITSHM=1
+              - ROS_MASTER_URI=http://localhost:11311
+          volumes:
+            - "$HOME/.Xauthority:/root/.Xauthority:rw"
+            - ./catkin_ws:/catkin_ws
+          stdin_open: true
+          tty: true
+      ```
+
+4. Running your container:
+
+
+    You can run this container as a standalone by executing this command to **build** the _image_, then spawn a container of it.
+
+    ```bash
+    sudo docker compose build
+    ```
+
+    Running a container:
+    ```bash
+    sudo docker compose up
+    ```
+    > _option_: add a `--build` flag to the up command to force the image to be re-built.
+
+    Now you have a container running. You can verify this by calling `sudo docker container ls`, it will output a list of all running containers. Copy the container's name and use it to __attach a shell__ to the container (starting using it actually).
+
+    The name of thi container is being defined using the `docker-compose.yml` file. It is a string combined from image name and from the `name` descriptor in the config, and a number that says with how many _containers_ of the _image_ you have spawned.
+
+
+    ```bash
+    sudo docker exec -it containe_name /bin/bash 
+    ```
+
+    > __NOTE-1__: You can host each separate part of the work in different containers and then run them all together. for example con-1 is the roscore, con-2 is the moveit nodes, con-3 is the ros_control nodes, ...
+
+    > __NOTE-2__: If you install the docker extnesion to VS-Code, you can attach an entire vs-code window to the container... access files and attach terminals...
+
+    > __NOTE-3__: you can make the user able to use docker without `sudo`, by executing this 
+    >
+    >```bash 
+    >sudo groupadd docker
+    >sudo usermod -aG >docker $USER
+    >newgrp docker
+    >```
+

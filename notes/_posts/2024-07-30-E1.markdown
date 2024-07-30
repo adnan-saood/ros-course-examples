@@ -1,0 +1,74 @@
+---
+layout: post
+title:  "Example 1: Nodes"
+date:   2024-07-30 19:12:49 +0200
+categories: basics
+---
+
+
+## Introduction
+
+Welcome to this ROS1 Noetic tutorial, designed to help you get hands-on experience with creating and managing ROS nodes. In this tutorial, we will build two separate ROS nodes: one that broadcasts the Fibonacci series and another that listens to the broadcasted numbers and prints them. This exercise will give you a foundational understanding of ROS communication mechanisms, specifically publishers and subscribers, within the Robot Operating System (ROS) framework.
+
+ROS (Robot Operating System) is an open-source, flexible framework for writing robot software. It is a collection of tools, libraries, and conventions that aim to simplify the task of creating complex and robust robot behavior across a wide variety of robotic platforms. For a deeper understanding of ROS, you can explore the following resources:
+
+- [Official ROS Documentation](https://wiki.ros.org/ROS/Tutorials)
+- [ROS Tutorials](https://wiki.ros.org/ROS/Tutorials)
+
+
+
+## Learning Outcomes
+By the end of this tutorial, you will:
+
+- Understand how to set up a ROS workspace.
+- Learn how to create and configure ROS packages.
+- Write Python scripts for ROS nodes that publish and subscribe to messages.
+- Gain practical experience with the ROS communication infrastructure.
+
+## Prerequisites
+
+To follow along with this tutorial, you should have:
+
+- Basic knowledge of Python programming.
+- ROS Noetic installed on your system. _Refer to the ROS Installation Guide for help with setting up ROS Noetic._
+
+## Tutorial Structure
+
+- Setting Up Your ROS Workspace:
+We'll start by setting up a new ROS workspace where our packages will reside.
+
+- Creating Packages: Next, we'll create two packages, one for the broadcaster node and another for the listener node.
+- Writing the Broadcaster Node: In this step, we'll write a Python script that continuously broadcasts the Fibonacci series.
+- Writing the Listener Node: Here, we'll write another Python script that listens for the Fibonacci series and prints each number.
+- Configuring Packages: We'll ensure that our packages are correctly configured by modifying necessary files.
+- Building and Running Nodes: Finally, we'll build our workspace and run the nodes to see them in action.
+
+## Few words about ROS Nodes
+
+
+A node is a fundamental building block in the ROS architecture. Nodes are processes that perform computation and are designed to be modular and reusable. Each node is responsible for a specific task and can communicate with other nodes through a ROS communication system.
+
+Key Characteristics of ROS1 Nodes:
+
+- Modularity: Nodes are designed to be small, single-purpose executables. This modular approach makes it easier to manage and debug the system.
+
+- Communication: Nodes communicate with each other using topics, services, and actions.
+
+- Topics: Used for unidirectional, asynchronous communication where a node publishes messages to a topic, and other nodes subscribe to that topic to receive the messages.
+
+Multi-language Support:
+
+Nodes can be written in various programming languages, such as Python, C++, and Lisp, thanks to the client libraries provided by ROS. This flexibility allows developers to choose the best language for their task.
+
+
+### Outline of a simple ROS1 Node
+
+- Setup: Initialize the ROS client library and create a node handle.
+- Define Communication: Define publishers, subscribers, services, or actions as needed.
+- Main Loop: Implement the main loop where the node will perform its tasks and handle communication.
+
+
+
+Feel free to explore these concepts further through additional resources and community discussions available online.
+
+By the end of this tutorial, you will have created a functional ROS project that demonstrates the basic principles of ROS node communication. This foundational knowledge will be invaluable as you progress to more complex robotics projects.
