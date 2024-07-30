@@ -1,5 +1,5 @@
 title: ROS Course
-email:adnan.saood@ensta-paris.fr
+email: adnan.saood@ensta-paris.fr
 description: >- # this means to ignore newlines until "baseurl:"
   This is the examples homepage for the Robotics Course.
 baseurl: "/notes"
