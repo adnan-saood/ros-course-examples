@@ -71,4 +71,181 @@ Nodes can be written in various programming languages, such as Python, C++, and 
 
 Feel free to explore these concepts further through additional resources and community discussions available online.
 
-By the end of this tutorial, you will have created a functional ROS project that demonstrates the basic principles of ROS node communication. This foundational knowledge will be invaluable as you progress to more complex robotics projects.
+By the end of this tutorial, you will have created a functional ROS project that demonstrates the basic principles of ROS node communication.
+
+
+# Exercise 1
+
+## Step 1: Setting Up The ROS Workspace
+
+First, make sure you have ROS Noetic installed on your system. Then, set up a new ROS workspace:
+
+```bash
+# Create a new directory for your workspace
+mkdir -p ros_workspace/src
+cd ros_workspace/src
+
+# Initialize the workspace
+catkin_init_workspace
+
+# Go back to the workspace root and build it
+cd ros_workspace
+catkin_make
+```
+
+## Step 2: Create Fibonacci Broadcast Packge
+
+The `catkin_create_pkg` takes care of initializing a package for us.
+
+```bash
+cd ros_workspace/src
+
+# Create the broadcaster package
+catkin_create_pkg fibonacci_broadcaster std_msgs rospy
+```
+
+When you run the command `catkin_create_pkg` fibonacci_broadcaster std_msgs rospy, it __automatically generates__ a basic package structure for your ROS package. Below is the expected folder structure and a brief description of each component:
+
+```css
+ros_workspace/
+└──src/
+    └── fibonacci_broadcaster/
+        ├── CMakeLists.txt
+        ├── package.xml
+        ├── src/
+        ├── include/
+        ├── launch/
+        └── msg/
+```
+
+### Folder and File Descriptions
+
+__fibonacci_broadcaster/__: The root directory of your package.
+
+- __`CMakeLists.txt`__: This file contains CMake directives and macros that are used to build your package. It includes instructions on how to build the package, dependencies, and installation rules.
+    - Key sections:
+        - __`project()`__: Defines the project name.
+        - __`find_package()`__: Finds and loads settings for the package dependencies.
+        - __`catkin_package()`__: Declares the catkin package and its dependencies.
+        - __`add_executable(), add_library()`__: Adds executables and libraries to the project.
+    ---
+- __`package.xml`__: This file contains meta-information about the package such as its name, version, description, maintainers, license, and __most importantly__ dependencies.
+     - __Key sections__:
+        - `<name>`: Package name.
+        - `<version>`: Package version.
+        - `<description>`: Brief description of the package.
+        - `<maintainer`>`: Maintainers of the package.
+        - `<license>`: License under which the package is distributed.
+        - `<build_depend>, <exec_depend>`: Dependencies required to build and run the package.
+    ---
+- __`src/`__: This directory is intended for the source files of your package, typically containing the node scripts and other implementation files.
+    - __Typical contents__: Python scripts (e.g., `fibonacci_broadcaster_node.py`). C++ sources (`.cpp`)
+
+    ---
+- __`include/`__: This directory is intended for C++ header files if you have any C++ code in your package.
+
+    ---
+- __`launch/`__: This directory is used to store launch files which are XML files that define how to launch one or multiple nodes with specific parameters. This will be used in future exercises.
+
+    ---
+- __`msg/`__: This directory is intended for custom message definitions if you need to define custom message types for your package.
+    - __Typical contents__: Message files (e.g., Fibonacci.msg).
+
+    ---
+
+This structured organization helps manage the package efficiently, ensuring that all necessary components are properly placed and accessible for development and execution within the ROS framework.
+
+
+## Step 3: Write the Fibonacci Broadcaster Node
+
+Navigate to the fibonacci_broadcaster package and create a new Python script:
+
+```bash
+cd ros_workspace/src/fibonacci_broadcaster/src
+touch fibonacci_broadcaster_node.py
+chmod +x fibonacci_broadcaster_node.py
+```
+
+Open `fibonacci_broadcaster_node.py` and add the following code:
+
+```python
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import Int32
+
+def fibonacci():
+    pub = rospy.Publisher('fibonacci', Int32, queue_size=10)
+    rospy.init_node('fibonacci_broadcaster', anonymous=True)
+    rate = rospy.Rate(1)  # 1 Hz
+
+    a, b = 0, 1
+    while not rospy.is_shutdown():
+        rospy.loginfo(a)
+        pub.publish(a)
+        a, b = b, a + b
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        fibonacci()
+    except rospy.ROSInterruptException:
+        pass
+```
+
+## Step 4: Modify the `CmakeLists.txt` and `package.xml`
+
+Everytime we create a package, ensure the CMakeLists.txt and package.xml are correctly set up to include dependencies and scripts.
+
+For `fibonacci_broadcaster`:
+Edit `CmakeLists.txt` to add:
+```cmake
+catkin_install_python(PROGRAMS src/fibonacci_broadcaster_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+```
+
+Add these lines in the middle of `package.xml` to ensure it includes the dependency on `rospy` and `std_msgs`:
+
+
+```xml
+<build_depend>rospy</build_depend>
+<build_depend>std_msgs</build_depend>
+<exec_depend>rospy</exec_depend>
+<exec_depend>std_msgs</exec_depend>
+```
+
+## Step 5: Build and Source the Broadcaster
+Go back to the root of your workspace and build it:
+
+```bash
+#dont forget to input the correct path here
+cd ros_workspace
+catkin_make
+source devel/setup.bash
+```
+
+sourcing `devel/setup.bash` in the current terminal tells bash where to look for the binaries we created by building the package when we want to run them. You need to do this everytime you opena  new terminal where you want to run something from your workspace. Think of it as we are adding to the `PATH` environment variable in windows temporarely.
+
+## Step 6: Run the Broadcaster
+
+Open three terminals and source your workspace (and ros workspace) in all of them.
+```bash
+#dont forget to input the correct path here
+cd ros_workspace
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+```
+
+In the first terminal, run the `roscore` to start a ROS master
+```bash
+roscore
+```
+
+In the second terminal, run the broadcaster node:
+```bash
+rosrun fibonacci_broadcaster fibonacci_broadcaster_node.py
+```
+
+You can now in the third terminal verify that the node is running by listing the nodes using `rosnode list`. You can also verify if the topic we created to publish the fibonacci numbers exists by running `rostopic list`. 
+
