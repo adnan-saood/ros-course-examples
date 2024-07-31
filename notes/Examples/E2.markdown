@@ -1,0 +1,11 @@
+---
+title:  "Example 2: URDF"
+categories: basics
+layout: default
+excerpt: URDF for robot descriptions
+nav_order: 2
+---
+
+# Example 2: URDF
+
+## Introduction

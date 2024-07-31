@@ -1,10 +1,11 @@
 ---
-layout: post
 title:  "Example 1: Nodes"
-date:   2024-07-30 19:12:49 +0200
-categories: basics
+layout: default
+excerpt: Creating Nodes in Packages
+nav_order: 1
 ---
 
+# Example 1: Nodes
 
 ## Introduction
 
@@ -74,9 +75,9 @@ Feel free to explore these concepts further through additional resources and com
 By the end of this tutorial, you will have created a functional ROS project that demonstrates the basic principles of ROS node communication.
 
 
-# Exercise 1
+## Exercise 1
 
-## Step 1: Setting Up The ROS Workspace
+### Step 1: Setting Up The ROS Workspace
 
 First, make sure you have ROS Noetic installed on your system. Then, set up a new ROS workspace:
 
@@ -93,7 +94,7 @@ cd ros_workspace
 catkin_make
 ```
 
-## Step 2: Create Fibonacci Broadcast Packge
+### Step 2: Create Fibonacci Broadcast Packge
 
 The `catkin_create_pkg` takes care of initializing a package for us.
 
@@ -118,7 +119,7 @@ ros_workspace/
         └── msg/
 ```
 
-### Folder and File Descriptions
+#### Folder and File Descriptions
 
 __fibonacci_broadcaster/__: The root directory of your package.
 
@@ -156,7 +157,7 @@ __fibonacci_broadcaster/__: The root directory of your package.
 This structured organization helps manage the package efficiently, ensuring that all necessary components are properly placed and accessible for development and execution within the ROS framework.
 
 
-## Step 3: Write the Fibonacci Broadcaster Node
+### Step 3: Write the Fibonacci Broadcaster Node
 
 Navigate to the fibonacci_broadcaster package and create a new Python script:
 
@@ -193,7 +194,7 @@ if __name__ == '__main__':
         pass
 ```
 
-## Step 4: Modify the `CmakeLists.txt` and `package.xml`
+### Step 4: Modify the `CmakeLists.txt` and `package.xml`
 
 Everytime we create a package, ensure the CMakeLists.txt and package.xml are correctly set up to include dependencies and scripts.
 
@@ -215,7 +216,7 @@ Add these lines in the middle of `package.xml` to ensure it includes the depende
 <exec_depend>std_msgs</exec_depend>
 ```
 
-## Step 5: Build and Source the Broadcaster
+### Step 5: Build and Source the Broadcaster
 Go back to the root of your workspace and build it:
 
 ```bash
@@ -227,7 +228,7 @@ source devel/setup.bash
 
 sourcing `devel/setup.bash` in the current terminal tells bash where to look for the binaries we created by building the package when we want to run them. You need to do this everytime you opena  new terminal where you want to run something from your workspace. Think of it as we are adding to the `PATH` environment variable in windows temporarely.
 
-## Step 6: Run the Broadcaster
+### Step 6: Run the Broadcaster
 
 Open three terminals and source your workspace (and ros workspace) in all of them.
 ```bash

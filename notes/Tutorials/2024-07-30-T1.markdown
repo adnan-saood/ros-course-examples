@@ -1,18 +1,18 @@
 ---
-layout: post
+layout: default
 title:  "Tutorial 1: Installation"
-date:   2024-07-30 19:12:49 +0200
 categories: basics
 ---
+# Tutorial 1: Installation
 
-# Introduction
+## Introduction
 
 
 This guide will help you install ROS Noetic on different operating systems: Ubuntu 20.04, Ubuntu 22.04, Windows WSL, and using Docker. Follow the instructions specific to your system.
 
 This is strictly for the use of the exercises and materials provided throughout the course. For real-world applications we may find setups a little different, but famiiar.
 
-# Table of Contents
+## Table of Contents
 - [Ubuntu 20.04](#ubuntu-2004)
 - [Ubuntu 22.04](#ubuntu-2204)
 - [Windows WSL](#windows-wsl)

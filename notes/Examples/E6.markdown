@@ -1,0 +1,10 @@
+---
+title:  "Example 6: ROS Control and Hardware Interfaces"
+categories: basics
+layout: default
+nav_order: 6
+---
+
+# Example 6: Example 6: ROS Control and Hardware Interfaces
+
+## Introduction
