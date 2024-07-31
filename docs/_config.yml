@@ -1,12 +1,9 @@
-title: ROS Course
-description: >- # this means to ignore newlines until "baseurl:"
-  This is the examples homepage for the Robotics Course.
-baseurl: "/"
-url: "http://adnan-saood.github.io"
-
-# Build settings
+title: ROS Course Examples and Homeworks
+description: This is the examples homepage for the Robotics Course.
 remote_theme: carlosperate/jekyll-theme-rtd
 
+# Theme settings:
+site_author: Carlos Pereira Atencio
 repo_url: "https://github.com/adnan-saood/ros-course-examples"
 edit_on_github: true
 github_docs_folder: true
