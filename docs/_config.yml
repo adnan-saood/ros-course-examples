@@ -3,7 +3,7 @@ description: This is the examples homepage for the Robotics Course.
 remote_theme: carlosperate/jekyll-theme-rtd
 
 # Theme settings:
-site_author: Carlos Pereira Atencio
+site_author: ENSTA-Paris
 repo_url: "https://github.com/adnan-saood/ros-course-examples"
 edit_on_github: true
 github_docs_folder: true
