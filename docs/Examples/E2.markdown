@@ -9,3 +9,31 @@ nav_order: 2
 # Example 2: URDF
 
 ## Introduction
+Unified Robot Description Format (URDF) is an XML format used in ROS (Robot Operating System) for representing a robot model. This model includes the robot's physical components (links) and the connections between them (joints). URDF is essential for robot simulation, visualization, and control, making it a fundamental tool in robotics.
+
+### Common Uses of URDF
+
+- __Simulation__: URDF files are used in simulation environments like Gazebo.
+- __Visualization__: Tools like RViz use URDF to render the robot model.
+- __Control__: URDF is integral in defining the robot's kinematics and dynamics for control algorithms.
+- __IKM__: using moveit.
+
+### Types of Links and Joints in URDF
+
+#### Links
+
+Inertial: Describes the mass and inertia of the link.
+Visual: Defines the appearance of the link.
+Collision: Specifies the geometry used for collision detection.
+
+#### Joints
+
+Fixed: A static connection between two links.
+Revolute: Allows rotation about a single axis within a specified range.
+Continuous: Similar to revolute but without range limits.
+Prismatic: Allows linear motion along an axis.
+Floating: Six degrees of freedom (not commonly used in simple robots).
+Planar: Constrains the motion to a plane (two translational and one rotational DOF).
+
+## Exercise 1: Creating a 3R Robot Arm
+
