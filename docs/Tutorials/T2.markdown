@@ -1,0 +1,58 @@
+---
+layout: default
+title:  "Tutorial 2: Homework and Project Submission Guideline"
+categories: basics
+---
+# Tutorial 2: Homework and Project Submission Guideline
+
+## Homeworks
+
+### First submission
+1. Issue this script in an empty folder
+
+    ```bash
+    BASE_DIR='homework_'$USER
+
+    mkdir $BASE_DIR
+    cd $BASE_DIR
+    mkdir src
+    cd src
+
+    # Initialize the workspace
+    catkin_init_workspace
+
+    catkin_create_pkg homework_1 std_msgs rospy
+
+    cd ..
+    catkin_make
+    ```
+
+2. Add a `README.MD` file to your workspace folder, and fill it with the following:
+
+    1. Name and email
+    2. Description of your implementation (repeat this for each homework)
+    3. Folder structure of your package (repeat this for each homework)
+
+    > You can check how to properly write in the markdown format [here](https://www.markdownguide.org/basic-syntax/)
+
+
+3. Create an empty public github or gitlab repository. You can either use your public github account, or using ENSTA's server [gitlab.ensta.fr](gitlab.ensta.fr)
+
+4. Push your workspace to the repository and send a link to the submission link.
+
+### Later submissions
+
+You can add packages to your submission repository by the command `catkin_create_pkg homework_1 std_msgs rospy`. Attention!, make sure you include the dependencies you need each time you create a package in the CLI command and make sure to verify they exist in the `package.xml` and `CMakeLists.txt` files. If you are going to create c++ packages you need to specify `roscpp` instead of `rospy`.
+
+The naming convention for the packages is homework_[Number]. If you want to create multiple packages per a submission then you are required to do the following:
+
+1. Create a folder in the `src` with the name `homework_[Number]`. 
+2. cd inside this folder `cd homework_[Number]`
+3. create your packages with anyname you want by using the command `catkin_create_pkg` multiple times. 
+
+In this manner you have created a `meta-package` named `homework_[Number]`, with several daughter packages names arbitrary. 
+
+## Project
+
+You are required to submit stricty a public git repository to the submission link, along with required material discussed in the course (report, ppt, ...)
+
