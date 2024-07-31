@@ -85,12 +85,12 @@ For now it is essential to install ROS1 either via Windows WSL, a virtual machin
 ## Docker (Any OS).
 The easiest and most versatile tool to run ROS applications. I recommend this option if you are comfortable with it, it has a steep learning curve though.
 
-1. Install Docker with Docker Compose
+1. **Install Docker with Docker Compose**
 
     Follow the instructions from Docker's documentation to [install Docker](https://docs.docker.com/get-docker/).
 
 
-2. Create an empty directory and fill it with necessary files:
+2. **Create an empty directory and fill it with necessary files**
 
     ```sh
     DIR_NAME=ros-noetic-base
@@ -104,7 +104,7 @@ The easiest and most versatile tool to run ROS applications. I recommend this op
     touch docker-compose.yml
     ```
 
-3. Fill in the Config files for the image and container
+3. **Fill in the Config files for the image and container**
 
     - `Dockefile`
 
@@ -165,7 +165,7 @@ The easiest and most versatile tool to run ROS applications. I recommend this op
           tty: true
       ```
 
-4. Running your container:
+4. **Running your container**
 
 
     You can run this container as a standalone by executing this command to **build** the _image_, then spawn a container of it.
