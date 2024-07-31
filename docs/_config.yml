@@ -6,10 +6,6 @@ url: "http://adnan-saood.github.io"
 
 # Build settings
 remote_theme: carlosperate/jekyll-theme-rtd
-plugins:
-  - jekyll-feed
-  - jekyll-remote-theme
-
 
 repo_url: "https://github.com/adnan-saood/ros-course-examples"
 edit_on_github: true
