@@ -102,15 +102,15 @@ The `catkin_create_pkg` takes care of initializing a package for us.
 cd ros_workspace/src
 
 # Create the broadcaster package
-catkin_create_pkg fibonacci_broadcaster std_msgs rospy
+catkin_create_pkg fibonacci std_msgs rospy
 ```
 
-When you run the command `catkin_create_pkg` fibonacci_broadcaster std_msgs rospy, it __automatically generates__ a basic package structure for your ROS package. Below is the expected folder structure and a brief description of each component:
+When you run the command `catkin_create_pkg` fibonacci std_msgs rospy, it __automatically generates__ a basic package structure for your ROS package. Below is the expected folder structure and a brief description of each component:
 
 ```css
 ros_workspace/
 └──src/
-    └── fibonacci_broadcaster/
+    └── fibonacci/
         ├── CMakeLists.txt
         ├── package.xml
         ├── src/
@@ -121,7 +121,7 @@ ros_workspace/
 
 #### Folder and File Descriptions
 
-__fibonacci_broadcaster/__: The root directory of your package.
+__fibonacci/__: The root directory of your package.
 
 - __`CMakeLists.txt`__: This file contains CMake directives and macros that are used to build your package. It includes instructions on how to build the package, dependencies, and installation rules.
     - Key sections:
@@ -159,10 +159,10 @@ This structured organization helps manage the package efficiently, ensuring that
 
 ### Step 3: Write the Fibonacci Broadcaster Node
 
-Navigate to the fibonacci_broadcaster package and create a new Python script:
+Navigate to the fibonacci package and create a new Python script:
 
 ```bash
-cd ros_workspace/src/fibonacci_broadcaster/src
+cd ros_workspace/src/fibonacci/src
 touch fibonacci_broadcaster_node.py
 chmod +x fibonacci_broadcaster_node.py
 ```
@@ -198,8 +198,7 @@ if __name__ == '__main__':
 
 Everytime we create a package, ensure the CMakeLists.txt and package.xml are correctly set up to include dependencies and scripts.
 
-For `fibonacci_broadcaster`:
-Edit `CmakeLists.txt` to add:
+In the `fibonacci` folder, edit `CmakeLists.txt` to add:
 ```cmake
 catkin_install_python(PROGRAMS src/fibonacci_broadcaster_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -245,8 +244,86 @@ roscore
 
 In the second terminal, run the broadcaster node:
 ```bash
-rosrun fibonacci_broadcaster fibonacci_broadcaster_node.py
+rosrun fibonacci fibonacci_broadcaster_node.py
 ```
 
 You can now in the third terminal verify that the node is running by listing the nodes using `rosnode list`. You can also verify if the topic we created to publish the fibonacci numbers exists by running `rostopic list`. 
 
+## Exercise 2
+
+Now we will create a subscription node that will listen to the fibonacci numbers and print them to the terminal.
+
+### Step 1: Create a Listener Node
+
+
+Navigate to the fibonacci package and create a new Python script:
+
+```bash
+cd ros_workspace/src/fibonacci/src
+touch fibonacci_listener_node.py
+chmod +x fibonacci_listener_node.py
+```
+
+Open `fibonacci_listener_node.py` and add the following code:
+
+```python
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import Int32
+
+def callback(data):
+    rospy.loginfo("I heard %d", data.data)
+
+def listener():
+    rospy.init_node('fibonacci_listener', anonymous=True)
+    rospy.Subscriber('fibonacci', Int32, callback)
+    rospy.spin()
+
+if __name__ == '__main__':
+    listener()
+
+```
+
+### Step 2: Edit the package files
+
+In the `fibonacci` folder, edit `CmakeLists.txt` to add:
+```cmake
+catkin_install_python(PROGRAMS src/fibonacci_broadcaster_node.py
+src/fibonacci_listener_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+```
+
+### Step 3: Build and source
+Go back to the root of your workspace and build it:
+```bash
+cd ros_workspace
+catkin_make
+source devel/setup.bash
+```
+
+
+### Step 4: Run the packages side-by-side
+Open two terminals and source your workspace in both:
+```bash
+source ros_workspace/devel/setup.bash
+```
+In the first terminal, run the broadcaster node
+```bash
+rosrun fibonacci_broadcaster fibonacci_broadcaster_node.py
+```
+
+In the second terminal, run the listener node
+```bash
+rosrun fibonacci_listener fibonacci_listener_node.py
+```
+
+
+> You should see the Fibonacci series being printed by the listener node, which receives the numbers from the broadcaster node.
+
+### Step 5: View the relationship using `rqt`
+
+Open a third terminal and source your workspace and the ros sources `/opt/ros/noetic/setup.bash`.
+
+Run rqt using the command `rqt`, then go to the plugins tab, navigate to introspection, then visualize the nodes and topics.
