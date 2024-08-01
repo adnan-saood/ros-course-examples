@@ -14,10 +14,7 @@ hljs_style: github-gist
 logo: 'https://asset.brandfetch.io/idDdLR3C28/idBsXi0nu5.png'
 
 
-# Make sure to use default layout
-defaults:
-  - scope:
-      path: ""
-      type: "docs"
-    values:
-      layout: "mer"
+markdown: kramdown
+kramdown:
+  syntax_highlighter_opts:
+    disable: true
