@@ -95,7 +95,7 @@ The <joint> tag defines the connection between two links and specifies the type 
 <div class="mermaid">
 graph TD;
     A-->B;
-    A-->C;
+    A-->B;
     B-->D;
     C-->D;
 </div>
