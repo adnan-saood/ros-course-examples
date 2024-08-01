@@ -35,5 +35,120 @@ Prismatic: Allows linear motion along an axis.
 Floating: Six degrees of freedom (not commonly used in simple robots).
 Planar: Constrains the motion to a plane (two translational and one rotational DOF).
 
+### URDF XML Syntax
+
+#### `<link>`
+The `<link>` tag defines a physical component of the robot. It can include several sub-elements that describe its properties and characteristics.
+
+__It contains the following elements:__
+##### `<inertial>`
+- Describes the mass and inertia of the link.
+- Sub-elements:
+    - `<origin>`: Specifies the pose of the inertial reference frame relative to the link reference frame.
+    - `<mass>`: Defines the mass of the link.
+    - `<inertia>`: Specifies the 3x3 inertia matrix of the link.
+
+
+##### `<visual>`
+- Defines the visual representation of the link.
+- Sub-elements:
+    - `<origin>`: Specifies the pose of the visual element relative to the link reference frame.
+    - `<geometry>`: Defines the shape of the visual element. Can be one of the following:
+        - `<box>`: Defines a box shape with size attribute.
+        - `<cylinder>`: Defines a cylinder shape with radius and length attributes.
+        - `<sphere>`: Defines a sphere shape with radius attribute.
+        - `<mesh>`: Defines a mesh shape with filename attribute (and optionally scale).
+        - `<material>`: Specifies the appearance of the visual element. Can be either:
+        - `<color>`: Defines the RGBA color of the material.
+
+##### `<collision>`
+- Defines the collision properties of the link.
+- Sub-elements:
+    - `<origin>`: Specifies the pose of the collision element relative to the link reference frame.
+    - `<geometry>`: Defines the shape of the collision element. Uses the same sub-elements as the `<geometry>` element in `<visual>`.
+
+#### `<sensor>`
+> Optional tag for simulation only
+
+Defines sensors attached to the link.
+- Sub-elements:
+    - `<origin>`: Specifies the pose of the sensor relative to the link reference frame.
+    - Specific sensor type tags (e.g., `<camera>`, `<ray>`).
+
+#### `<transmission>`
+> Optional tag for simulation only
+
+Defines transmissions associated with the link.
+- Sub-elements:
+    - `<type>`: Defines the type of transmission (e.g., SimpleTransmission).
+    - `<joint>`: Specifies the joint connected to the transmission.
+    - `<actuator>`: Defines the actuator associated with the transmission.
+    - `<mechanicalReduction>`: Defines the reduction factor for the transmission.
+
+
+#### Joints
+The <joint> tag defines the connection between two links and specifies the type of motion allowed between them. The <joint> element can include several sub-elements that describe its properties and characteristics.
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+
 ## Exercise 1: Creating a 3R Robot Arm
+
+### Prerequesets
+
+1. ROS 1 Installed (preferrably Noetic)
+2. A ROS workspace
+
+### Step 1: Create a `RobotDescription` Package
+
+```bash
+#in ros_workspace
+cd src
+catkin_create_pkg my_robot_description urdf rviz
+cd ..
+catkin_make
+source devel/setup.bash
+```
+ 
+Add necessary folders to host config files
+```bash
+cd src/my_robot_description
+mkdir urdf launch rviz
+```
+
+### Step 2: Write a new URDF file
+
+```bash
+nano urdf/3r_robot.urdf
+```
+
+Inside the newly created urdf file, define a baselink
+```xml
+<?xml version="1.0"?>
+<robot name="3r_robot">
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+```
 
