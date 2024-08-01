@@ -12,3 +12,13 @@ prev_next_buttons_location: bottom
 search_enabled: true
 hljs_style: github-gist
 logo: 'https://asset.brandfetch.io/idDdLR3C28/idBsXi0nu5.png'
+
+
+# Make sure to use default layout
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+      
