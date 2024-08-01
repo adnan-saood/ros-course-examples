@@ -93,11 +93,34 @@ Defines transmissions associated with the link.
 The <joint> tag defines the connection between two links and specifies the type of motion allowed between them. The <joint> element can include several sub-elements that describe its properties and characteristics.
 
 <div class="mermaid">
-graph TD;
-    A-->B;
-    A-->B;
-    B-->D;
-    C-->D;
+
+graph TD
+Client --> DNS & CDN & lb[Load Balancer]
+CDN --> store
+lb --> web[Web Server] --> salesApi[Sales API] & readApi[Read API]
+service[Sales Rank Service]
+
+subgraph storage
+dbPrimary[SQL Write Primary] -.- dbReplica[SQL Read Replicas]
+store[Object Store]
+end
+
+service --> dbPrimary & store
+salesApi --> dbPrimary & store
+readApi --> dbReplica & store & memoryCache[Memory Cache]
+
+subgraph apis
+salesApi
+readApi
+end
+
+subgraph frontend
+Client
+DNS
+CDN
+lb
+web
+end
 </div>
 
 
