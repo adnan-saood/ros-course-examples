@@ -6,6 +6,9 @@ excerpt: URDF for robot descriptions
 nav_order: 2
 ---
 
+{% include mermaid.html %}
+
+
 # Example 2: URDF
 
 ## Introduction
