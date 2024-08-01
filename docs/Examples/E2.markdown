@@ -89,13 +89,13 @@ Defines transmissions associated with the link.
 #### Joints
 The <joint> tag defines the connection between two links and specifies the type of motion allowed between them. The <joint> element can include several sub-elements that describe its properties and characteristics.
 
-```mermaid
+<div class="mermaid">
 graph TD;
     A-->B;
     A-->C;
     B-->D;
     C-->D;
-```
+</div>
 
 
 ## Exercise 1: Creating a 3R Robot Arm
