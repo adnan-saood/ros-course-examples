@@ -21,22 +21,14 @@ Unified Robot Description Format (URDF) is an XML format used in ROS (Robot Oper
 - __Control__: URDF is integral in defining the robot's kinematics and dynamics for control algorithms.
 - __IKM__: using moveit.
 
-### Types of Links and Joints in URDF
+##### Types of Joints in URDF
+- `revolute`: Rotational motion with limits. (Manipulator arm)
+- `continuous`: Rotational motion without limits. (Mobile robot wheel)
+- `prismatic`: Translational motion with limits. (3D Printer)
+- `fixed`: No motion. (Fixed sensor)
+- `floating`: Six degrees of freedom (not commonly used in simple robots). (Drone to ground)
+- `planar`: Constrains motion to a plane (two translational and one rotational DOF). (Mobile robot to ground)
 
-#### Links
-
-Inertial: Describes the mass and inertia of the link.
-Visual: Defines the appearance of the link.
-Collision: Specifies the geometry used for collision detection.
-
-#### Joints
-
-Fixed: A static connection between two links.
-Revolute: Allows rotation about a single axis within a specified range.
-Continuous: Similar to revolute but without range limits.
-Prismatic: Allows linear motion along an axis.
-Floating: Six degrees of freedom (not commonly used in simple robots).
-Planar: Constrains the motion to a plane (two translational and one rotational DOF).
 
 ### URDF XML Syntax
 
@@ -47,7 +39,7 @@ The `<link>` tag defines a physical component of the robot. It can include sever
 <div class="mermaid">
 
 flowchart LR
-    link{"link"} ===> inertial(["inertial"])
+    link{"link \n (name)"} ===> inertial(["inertial"])
     inertial --> origin_inertial(["origin (xyz, rpy)"]) & mass(["mass (value)"]) & inertia(["inertia (ixx, ixy, ixz, iyy, iyz, izz)"])
     link ==> visual(["visual"]) & collision(["collision"])
     visual --> origin_visual(["origin (xyz, rpy)"]) & geometry_visual(["geometry"]) & material(["material"])
@@ -155,16 +147,54 @@ Defines transmissions associated with the link.
 #### Joints
 The <joint> tag defines the connection between two links and specifies the type of motion allowed between them. The <joint> element can include several sub-elements that describe its properties and characteristics.
 
+<div class="mermaid">
+flowchart LR
+    joint{"joint \n (name, type)"} ==> parent(["parent (link)"]) & child(["child (link)"]) & origin(["origin (xyz, rpy)"]) & axis(["axis (xyz)"]) & limit(["limit"])
+    joint -.-> safety_controller(["safety_controller"]) & mimic(["mimic"]) & dynamics(["dynamics"])
+    limit --> lower(["lower"]) & upper(["upper"]) & effort(["effort"]) & velocity(["velocity"])
+    dynamics -.-> damping["damping"] & friction["friction"]
+    safety_controller -.-> soft_lower_limit["soft_lower_limit"] & soft_upper_limit["soft_upper_limit"] & k_position["k_position"] & k_velocity["k_velocity"]
+    mimic -.-> joint_mimic["joint (name)"] & multiplier["multiplier"] & offset["offset"]
+    style joint stroke:#000000,fill:#FFFFFF,stroke-width:4px,stroke-dasharray: 0
+    style parent stroke:#D50000,fill:#FFCDD2,stroke-width:4px,stroke-dasharray: 0
+    style child stroke:#FF6D00,fill:#FFE0B2,stroke-width:4px,stroke-dasharray: 0
+    style origin stroke:#FFD600,fill:#FFF9C4,stroke-width:4px,stroke-dasharray: 0
+    style axis stroke:#00C853,fill:#C8E6C9,stroke-width:4px,stroke-dasharray: 0
+    style limit stroke:#2962FF,fill:#BBDEFB,stroke-width:4px,stroke-dasharray: 0
+    style safety_controller stroke-width:4px,stroke-dasharray: 5
+    style mimic stroke-width:4px,stroke-dasharray: 5
+    style dynamics stroke-width:4px,stroke-dasharray: 5
+    style damping stroke-width:2px,stroke-dasharray: 2
+    style friction stroke-width:2px,stroke-dasharray: 2
+    style soft_lower_limit stroke-width:2px,stroke-dasharray: 2
+    style soft_upper_limit stroke-width:2px,stroke-dasharray: 2
+    style k_position stroke-width:2px,stroke-dasharray: 2
+    style k_velocity stroke-width:2px,stroke-dasharray: 2
+    style joint_mimic stroke-width:2px,stroke-dasharray: 2
+    style multiplier stroke-width:2px,stroke-dasharray: 2
+    style offset stroke-width:2px,stroke-dasharray: 2
+
+
+</div>
+
+
 
 - Sub-elements of <joint>:
-##### `<parent>`
-- Specifies the parent link of the joint.
-- Attributes: `<link>`: Name of the parent link.
+##### `<parent>` \& `<child>`
 
-##### `<child>`
+<div class="mermaid">
+flowchart LR
+    parent(["parent"]) ==> joint("Joint")
+    joint ==> child(["child"])
+    style parent stroke:#00C853,fill:#C8E6C9
+    style joint stroke-width:4px,stroke-dasharray: 0,stroke:#000000,fill:#FFFFFF
+    style child stroke:#FF6D00,fill:#FFE0B2
 
-- Specifies the child link of the joint.
-- Attributes: `<link>`: Name of the child link.
+</div>
+
+
+
+- Specifies the parent and child links of the joint with attribute `<link>` using its name.
 ##### `<origin>`
 
 - Specifies the pose of the joint reference frame relative to the parent link reference frame.
@@ -178,55 +208,137 @@ The <joint> tag defines the connection between two links and specifies the type 
     - `<xyz>`: Axis vector (e.g., `xyz="0 0 1"`).
 ##### `<limit>`
 
+<div class="mermaid">
+flowchart LR
+    joint{"joint \n (name, type)"} ====> limit(["limit"])
+    
+    limit ----> lower(["lower"]) & upper(["upper"]) & effort(["effort"]) & velocity(["velocity"])
+
+    style joint stroke:#000000,fill:#FFFFFF,stroke-width:4px,stroke-dasharray: 0
+   
+    style limit stroke:#2962FF,fill:#BBDEFB,stroke-width:4px,stroke-dasharray: 0
+   
+
+
+</div>
+
 - Specifies the joint limits (applicable for revolute and prismatic joints).
 - Attributes:
-    - lower: Lower limit of the joint (e.g., lower="-1.57").
-    - upper: Upper limit of the joint (e.g., upper="1.57").
-    - effort: Maximum effort (force/torque) that can be applied (e.g., effort="100").
-    - velocity: Maximum velocity of the joint (e.g., velocity="1.0").
+    -  `<lower>`: Lower limit of the joint (e.g., `lower="-1.57"`).
+    -  `<upper>`: Upper limit of the joint (e.g., `upper="1.57"`).
+    -  `<effort>`: Maximum effort (force/torque) that can be applied (e.g., `effort="100"`).
+    -  `<velocity>`: Maximum velocity of the joint (e.g., `velocity="1.0"`).
 ##### `<dynamics>`
 - Specifies the physical properties of the joint's movement.
 - Attributes:
-    - damping: Damping coefficient (e.g., damping="0.1").
-    - friction: Friction coefficient (e.g., friction="0.01").
+    -  `<damping>`: Damping coefficient (e.g., `damping="0.1"`).
+    -  `<friction>`: Friction coefficient (e.g., `friction="0.01"`).
 ##### `<safety_controller>`
 
 - Specifies the safety controller parameters for the joint.
 - Attributes:
-    - soft_lower_limit: Soft lower limit (e.g., soft_lower_limit="-1.57").
-    - soft_upper_limit: Soft upper limit (e.g., soft_upper_limit="1.57").
-    - k_position: Position correction gain (e.g., k_position="10").
-    - k_velocity: Velocity correction gain (e.g., k_velocity="10").
+    -  `<soft_lower_limit>`: Soft lower limit (e.g., `soft_lower_limit="-1.57"`).
+    -  `<soft_upper_limit>`: Soft upper limit (e.g., `soft_upper_limit="1.57"`).
+    -  `<k_position>`: Position correction gain (e.g., `k_position="10"`).
+    -  `<k_velocity>`: Velocity correction gain (e.g., `k_velocity="10"`).
 ##### `<calibration>`
 
 - Specifies the calibration parameters for the joint.
 - Attributes:
-    - rising: Position at which the calibration rising edge occurs.
-    - falling: Position at which the calibration falling edge occurs.
+    -  `<rising>`: Position at which the calibration rising edge occurs.
+    -  `<falling>`: Position at which the calibration falling edge occurs.
 ##### `<mimic>`
 
 - Specifies that the joint mimics the motion of another joint.
 - Attributes:
-    - joint: Name of the joint to mimic.
-    - multiplier: Multiplier for the mimic motion (e.g., multiplier="1.0").
-    - offset: Offset for the mimic motion (e.g., offset="0.0").
-
-##### Types of Joints in URDF
-###### revolute
-Rotational motion with limits.
-continuous
-Rotational motion without limits.
-###### prismatic
-Translational motion with limits.
-###### fixed
-No motion.
-###### floating
-Six degrees of freedom (not commonly used in simple robots).
-###### planar
-Constrains motion to a plane (two translational and one rotational DOF).
+    -  `<joint>`: Name of the joint to mimic.
+    -  `<multiplier>`: Multiplier for the mimic motion (e.g., `multiplier="1.0"`).
+    -  `<offset>`: Offset for the mimic motion (e.g., `offset="0.0"`).
 
 
-## Exercise 1: Creating a 3R Robot Arm
+
+## Exercise 1: Creating a 2R Robot Arm
+
+
+
+<div class="mermaid">
+
+classDiagram
+    direction LR
+    class world {
+        name "world"
+    }
+    class base_link {
+        name "base_link"
+    }
+    
+    class link_0 {
+        name "link_0"
+        Inertial inertial
+        Visual box \n +size="1 0.1 0.1"\n +origin rpy="0 0 0" xyz="0.5 0 0"
+        Collision box \n +size="1 0.1 0.1"\n +origin rpy="0 0 0" xyz="0.5 0 0"
+    }
+
+    class link_1 {
+        name "link_1"
+        Inertial inertial
+        Visual box \n +size="1 0.05 0.05"\n +origin rpy="0 0 0" xyz="0.5 0 0"
+        Collision box \n +size="1 0.05 0.05"\n +origin rpy="0 0 0" xyz="0.5 0 0"
+    }
+
+    class world_joint {
+        name "world_joint"
+        type "fixed"
+        parent "world"
+        child "base_link"
+        origin rpy="0 0 0" xyz="0 0 0"
+    }
+    class Joint0 {
+        name joint0
+        type revolute
+        parent base_link
+        Child link_0
+        origin rpy="0 0 0" xyz="0 0 0"
+        axis rpy="0 0 0" xyz="0 0 1"
+        limit lower="0.0" upper="6.28"
+        +effort="300.0" velocity="1.0"
+    }
+    class Joint1 {
+        name "joint1"
+        type revolute
+        parent "link_0"
+        child "link_1"
+        origin rpy="0 0 0" xyz="0 0 0"
+        axis rpy="0 0 0" xyz="0 0 1"
+        limit lower="0.0" upper="6.28"
+        +effort="300.0" velocity="1.0"
+    }
+
+    %% Defining the relationships
+    world --> world_joint
+
+    world_joint --> base_link
+    base_link --> Joint0
+    Joint0 --> link_0
+    link_0 --> Joint1
+    Joint1 --> link_1
+
+    style world fill: #fcdb97,stroke:#c76a06,stroke-width:4px
+    style base_link fill:#fcdb97,stroke:#c76a06,stroke-width:4px
+    style link_0 fill:#fcdb97,stroke:#c76a06,stroke-width:4px
+    style link_1 fill:#fcdb97,stroke:#c76a06,stroke-width:4px
+    style link_2 fill:#fcdb97,stroke:#c76a06,stroke-width:4px
+    style EF fill:#fcdb97,stroke:#c76a06,stroke-width:4px
+
+    style world_joint fill:#dffcb6 ,stroke:#4c8004,stroke-width:2px
+    style Joint0 fill:#dffcb6,stroke:#4c8004,stroke-width:2px
+    style Joint1 fill:#dffcb6,stroke:#4c8004,stroke-width:2px
+    style Joint2 fill:#dffcb6,stroke:#4c8004,stroke-width:2px
+    style JointEF fill:#dffcb6,stroke:#4c8004,stroke-width:2px
+
+
+
+</div>
 
 ### Prerequesets
 
@@ -256,27 +368,208 @@ mkdir urdf launch rviz
 nano urdf/3r_robot.urdf
 ```
 
-Inside the newly created urdf file, define a baselink
+Inside the newly created urdf file, define a world
 ```xml
 <?xml version="1.0"?>
 <robot name="3r_robot">
-  <link name="base_link">
-    <visual>
-      <geometry>
-        <box size="0.1 0.1 0.1"/>
-      </geometry>
-      <material name="blue"/>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.1 0.1 0.1"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="1.0"/>
-      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
-    </inertial>
-  </link>
+  <link name="world">
+
+    <!-- other robot content here -->
+
+</robot>
+```
+
+> You should be able to visualize what you are building using various URDF visualization tools. There is a VSCode extension and there are some online tools to try out. This is especially useful in our example here.
+
+### Step 2: 
+Add the links to the URDF file so we can link them later using appropriate joints:
+
+#### `link_0` 
+
+```xml
+
+<link name="link_0">
+  <visual>
+    <geometry>
+      <box size="1 .1 .1"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0.5 0 0"/>
+  </visual>
+</link>
 
 ```
+
+#### `link_1`
+
+```xml
+<link name="link_1">
+  <visual>
+    <geometry>
+      <box size="1 .05 .05"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0.5 0 0"/>
+  </visual>
+</link>
+```
+
+#### `tool0`
+
+```xml
+<link name="tool0"/>
+```
+
+### Step 3: Add joints to define relationship between joints
+
+In the same urdf xml file, add the following joints:
+
+#### `world_joint`
+
+```xml
+<joint name="world_joint" type="fixed">
+  <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  <parent link="world"/>
+  <child link="base_link"/>
+</joint>
+```
+
+#### `joint_0`
+
+```xml
+<joint name="joint0" type="revolute">
+  <axis rpy="0 0 0" xyz="0 0 1"/>
+  <parent link="base_link"/>
+  <child link="link_0"/>
+  <limit lower="0.0" upper="6.28" effort="300.0" velocity="1.0"/>
+</joint>
+```
+
+#### `joint_1`
+
+```xml
+	<joint name="joint1" type="revolute">
+		<axis rpy="0 0 0" xyz="0 0 1"/>
+		<parent link="link_0"/>
+		<child link="link_1"/>
+		<origin rpy="0 0 0" xyz="1 0 0"/>
+        <limit lower="0.0" upper="6.28" effort="300.0" velocity="1.0"/>
+	</joint>
+```
+
+#### `joint_ef`
+
+```xml
+	<joint name="joint_ef" type="fixed">
+		<parent link="link_1"/>
+		<child link="tool0"/>
+		<origin rpy="0 0 0" xyz="1 0 0"/>
+	</joint>
+```
+
+### Step 4: Build the node and then view the URDF using `rviz`
+
+#### Launch File
+Create a launch file and po;ulate it with the following content. This will help us launch several nodes at once instead of manually launching them one-by-one.
+
+```bash
+nano launch/display.launch
+```
+
+Add the following content to the file:
+```xml
+<launch>
+  <param name="robot_description" command="$(find xacro)/xacro $(find my_robot_description)/urdf/3r_robot.urdf"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_robot_description)/rviz/3r_robot.rviz"/>
+</launch>
+```
+
+The last node to launch is the `rviz` node. Note that we specified a path for a configuration file named `3r_robot.rviz`. This will be useful to store viewing configuration (view angle, setup, background and grid config, ...). `rviz` will prompt you upn exit to specify if you want to save the configuration or not. 
+
+So now we have to create this file so that rviz can write in it. We somply create an empty file:
+
+```bash
+nano rviz/3r_robot.rviz
+```
+
+#### Launching the visualization
+
+```bash
+# in workspace folder
+source /opt/ros/noetic/setup.bash
+catkin_make
+source devel/setup.bash
+
+roslaunch my_robot_description display.launch
+```
+
+#### Explore some more
+
+Try adding some material properties to your URDF links to make them colorful. Also, explore with adding collision geometry, inertia, and other properties discussed above.
+
+> Try exploring some simple URDF files online for inspiration. 
+
+
+## XACRO
+
+XACRO (XML Macros) is a powerful tool in ROS (Robot Operating System) for simplifying the creation of URDF (Unified Robot Description Format) files. URDF files can become very large and complex when defining robots with many links and joints. XACRO helps manage this complexity by allowing the use of macros, parameters, and conditional logic within XML. This makes the robot description more modular, reusable, and easier to maintain.
+
+### Key features
+
+- __Macros__: Define reusable blocks of XML code.
+- __Parameters__: Use variables to avoid hardcoding values.
+- __Conditional Statements__: Apply logic to include or exclude parts of the XML.
+
+### Exercise 2: Simple XACRO Macro example
+
+#### Step 1: Install XACRO
+
+```bash
+sudo apt-get install ros-noetic-xacro
+```
+
+#### Step 2: Create XACRO file
+Create a file named `simple_robot.xacro`.
+
+```xml
+<!-- simple_robot.xacro -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_robot">
+
+  <!-- Define a macro for a link -->
+  <xacro:macro name="simple_link" params="link_name box_width">
+    <link name="${link_name}">
+      <origin rpy="0 0 0" xyz="0.5 0 0"/>
+      <visual>
+        <geometry>
+          <box size="1 ${box_width} ${box_width}"/>
+        </geometry>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Define a macro for a joint -->
+  <xacro:macro name="simple_joint" params="joint_name parent_link child_link">
+    <joint name="${joint_name}" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${child_link}"/>
+      <origin xyz="1 0 0" rpy="0 0 0"/>
+      <axis rpy="0 0 0" xyz="0 0 1"/>
+      <limit lower="0.0" upper="6.28" effort="300.0" velocity="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Use the macros to create links and joints -->
+  <xacro:simple_link link_name="link_1"/>
+  <xacro:simple_link link_name="link_2"/>
+  <xacro:simple_joint joint_name="joint_1" parent_link="link_1" child_link="link_2"/>
+
+</robot>
+```
+
+#### Step 3: Generate the URDF from the XACRO file
+```bash
+rosrun xacro xacro simple_robot.xacro -o simple_robot.urdf
+```
+
+#### Step 4: Now visualize the resultant URDF file using the appropriate tool.
 
