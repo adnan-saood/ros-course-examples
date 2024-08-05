@@ -43,8 +43,43 @@ Planar: Constrains the motion to a plane (two translational and one rotational D
 #### `<link>`
 The `<link>` tag defines a physical component of the robot. It can include several sub-elements that describe its properties and characteristics.
 
+
+<div class="mermaid">
+
+flowchart LR
+    link{"link"} ===> inertial(["inertial"])
+    inertial --> origin_inertial(["origin (xyz, rpy)"]) & mass(["mass (value)"]) & inertia(["inertia (ixx, ixy, ixz, iyy, iyz, izz)"])
+    link ==> visual(["visual"]) & collision(["collision"])
+    visual --> origin_visual(["origin (xyz, rpy)"]) & geometry_visual(["geometry"]) & material(["material"])
+    geometry_visual --> mesh_visual["mesh (filename, scale)"]
+    link -.-> sensor(["sensor (type, name)"]) & transmission(["transmission (name)"])
+    collision --> origin_collision(["origin (xyz, rpy)"]) & geometry_collision(["geometry"])
+    geometry_collision --> mesh_collision["mesh (filename, scale)"]
+    sensor -.-> origin_sensor(["origin (xyz, rpy)"])
+    transmission -.-> type(["type"]) & joint(["joint (name)"]) & actuator(["actuator (name)"]) & mechanicalReduction(["mechanicalReduction"])
+    style link fill:#FFFFFF,stroke:#424242,stroke-width:4px,stroke-dasharray: 0
+    style inertial stroke:#FF6D00,fill:#FFD600,stroke-width:4px,stroke-dasharray: 0
+    style visual stroke:#2962FF,fill:#BBDEFB,stroke-width:4px,stroke-dasharray: 0
+    style collision stroke:#00C853,fill:#C8E6C9,stroke-width:4px,stroke-dasharray: 0
+    style mesh_visual stroke-width:4px,stroke-dasharray: 0
+    style sensor stroke-width:4px,stroke-dasharray: 5
+    style transmission stroke-width:4px,stroke-dasharray: 5
+    style mesh_collision stroke-width:4px,stroke-dasharray: 0
+</div>
+
 __It contains the following elements:__
 ##### `<inertial>`
+
+<div class="mermaid">
+
+flowchart LR
+    link{"link"} ====> inertial(["inertial"])
+    inertial ----> origin_inertial(["origin (xyz, rpy)"]) & mass(["mass (value)"]) & inertia(["inertia (ixx, ixy, ixz, iyy, iyz, izz)"])
+    
+    style link fill:#FFFFFF,stroke:#424242,stroke-width:4px,stroke-dasharray: 0
+    style inertial stroke:#FF6D00,fill:#FFD600,stroke-width:4px,stroke-dasharray: 0
+</div>
+
 - Describes the mass and inertia of the link.
 - Sub-elements:
     - `<origin>`: Specifies the pose of the inertial reference frame relative to the link reference frame.
@@ -53,6 +88,20 @@ __It contains the following elements:__
 
 
 ##### `<visual>`
+
+<div class="mermaid">
+
+flowchart LR
+    link{"link"} ====> visual(["visual"])
+    visual ----> origin_visual(["origin (xyz, rpy)"]) & geometry_visual(["geometry"]) & material(["material"])
+    geometry_visual --> mesh_visual["mesh (filename, scale)"]
+    style link fill:#FFFFFF,stroke:#424242,stroke-width:4px,stroke-dasharray: 0
+    style visual stroke:#2962FF,fill:#BBDEFB,stroke-width:4px,stroke-dasharray: 0
+    style mesh_visual stroke-width:4px,stroke-dasharray: 0
+
+</div>
+
+
 - Defines the visual representation of the link.
 - Sub-elements:
     - `<origin>`: Specifies the pose of the visual element relative to the link reference frame.
@@ -65,12 +114,26 @@ __It contains the following elements:__
         - `<color>`: Defines the RGBA color of the material.
 
 ##### `<collision>`
+
+<div class="mermaid">
+
+flowchart LR
+    link{"link"} ====> collision(["collision"])
+    collision ----> origin_collision(["origin (xyz, rpy)"]) & geometry_collision(["geometry"])
+    geometry_collision --> mesh_collision["mesh (filename, scale)"]
+   
+    style link fill:#FFFFFF,stroke:#424242,stroke-width:4px,stroke-dasharray: 0
+    style collision stroke:#00C853,fill:#C8E6C9,stroke-width:4px,stroke-dasharray: 0
+    style mesh_collision stroke-width:4px,stroke-dasharray: 0
+</div>
+
+
 - Defines the collision properties of the link.
 - Sub-elements:
     - `<origin>`: Specifies the pose of the collision element relative to the link reference frame.
     - `<geometry>`: Defines the shape of the collision element. Uses the same sub-elements as the `<geometry>` element in `<visual>`.
 
-#### `<sensor>`
+##### `<sensor>`
 > Optional tag for simulation only
 
 Defines sensors attached to the link.
@@ -78,7 +141,7 @@ Defines sensors attached to the link.
     - `<origin>`: Specifies the pose of the sensor relative to the link reference frame.
     - Specific sensor type tags (e.g., `<camera>`, `<ray>`).
 
-#### `<transmission>`
+##### `<transmission>`
 > Optional tag for simulation only
 
 Defines transmissions associated with the link.
@@ -92,36 +155,75 @@ Defines transmissions associated with the link.
 #### Joints
 The <joint> tag defines the connection between two links and specifies the type of motion allowed between them. The <joint> element can include several sub-elements that describe its properties and characteristics.
 
-<div class="mermaid">
 
-graph TD
-Client --> DNS & CDN & lb[Load Balancer]
-CDN --> store
-lb --> web[Web Server] --> salesApi[Sales API] & readApi[Read API]
-service[Sales Rank Service]
+- Sub-elements of <joint>:
+##### `<parent>`
+- Specifies the parent link of the joint.
+- Attributes: `<link>`: Name of the parent link.
 
-subgraph storage
-dbPrimary[SQL Write Primary] -.- dbReplica[SQL Read Replicas]
-store[Object Store]
-end
+##### `<child>`
 
-service --> dbPrimary & store
-salesApi --> dbPrimary & store
-readApi --> dbReplica & store & memoryCache[Memory Cache]
+- Specifies the child link of the joint.
+- Attributes: `<link>`: Name of the child link.
+##### `<origin>`
 
-subgraph apis
-salesApi
-readApi
-end
+- Specifies the pose of the joint reference frame relative to the parent link reference frame.
+- Attributes:
+    - `<xyz>`: Translation vector (e.g., `xyz="0 0 0"`).
+    - `<rpy>`: Rotation vector (Roll, Pitch, Yaw) (e.g., `rpy="0 0 0"`).
+##### `<axis>`
 
-subgraph frontend
-Client
-DNS
-CDN
-lb
-web
-end
-</div>
+- Specifies the axis of rotation or translation for the joint.
+- Attributes:
+    - `<xyz>`: Axis vector (e.g., `xyz="0 0 1"`).
+##### `<limit>`
+
+- Specifies the joint limits (applicable for revolute and prismatic joints).
+- Attributes:
+    - lower: Lower limit of the joint (e.g., lower="-1.57").
+    - upper: Upper limit of the joint (e.g., upper="1.57").
+    - effort: Maximum effort (force/torque) that can be applied (e.g., effort="100").
+    - velocity: Maximum velocity of the joint (e.g., velocity="1.0").
+##### `<dynamics>`
+- Specifies the physical properties of the joint's movement.
+- Attributes:
+    - damping: Damping coefficient (e.g., damping="0.1").
+    - friction: Friction coefficient (e.g., friction="0.01").
+##### `<safety_controller>`
+
+- Specifies the safety controller parameters for the joint.
+- Attributes:
+    - soft_lower_limit: Soft lower limit (e.g., soft_lower_limit="-1.57").
+    - soft_upper_limit: Soft upper limit (e.g., soft_upper_limit="1.57").
+    - k_position: Position correction gain (e.g., k_position="10").
+    - k_velocity: Velocity correction gain (e.g., k_velocity="10").
+##### `<calibration>`
+
+- Specifies the calibration parameters for the joint.
+- Attributes:
+    - rising: Position at which the calibration rising edge occurs.
+    - falling: Position at which the calibration falling edge occurs.
+##### `<mimic>`
+
+- Specifies that the joint mimics the motion of another joint.
+- Attributes:
+    - joint: Name of the joint to mimic.
+    - multiplier: Multiplier for the mimic motion (e.g., multiplier="1.0").
+    - offset: Offset for the mimic motion (e.g., offset="0.0").
+
+##### Types of Joints in URDF
+###### revolute
+Rotational motion with limits.
+continuous
+Rotational motion without limits.
+###### prismatic
+Translational motion with limits.
+###### fixed
+No motion.
+###### floating
+Six degrees of freedom (not commonly used in simple robots).
+###### planar
+Constrains motion to a plane (two translational and one rotational DOF).
 
 
 ## Exercise 1: Creating a 3R Robot Arm
