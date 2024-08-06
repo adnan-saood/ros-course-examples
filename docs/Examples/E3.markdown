@@ -282,7 +282,7 @@ Stability analysis as an action server.
 
 A transfer function \( H(s) \) is a mathematical representation of the relationship between the input and output of a linear time-invariant (LTI) system in the Laplace domain. It is typically represented as:
 
-\[ H(s) = \frac{N(s)}{D(s)} \]
+$$ H(s) = \frac{N(s)}{D(s)} $$
 
 where:
 - \( N(s) \) is the numerator polynomial.
