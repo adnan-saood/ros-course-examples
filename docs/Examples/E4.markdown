@@ -234,14 +234,3 @@ roslaunch prr_robot view_robot.launch
 ```
 
 This will open RViz and load your PRR robot model. You can visualize the robot and interact with it.
-
-### Step 10: Explore and Experiment
-
-Encourage students to explore the following:
-
-1. **Modify the URDF**: Change dimensions, add new links, or joints.
-2. **Gazebo Simulation**: Integrate Gazebo and create a simulation launch file.
-3. **MoveIt Configuration**: Experiment with motion planning and execute trajectories.
-4. **Controllers**: Add more controllers and understand their configurations.
-
-This tutorial provides a solid foundation for students to understand the workflow of creating and configuring a robot package in ROS1.
