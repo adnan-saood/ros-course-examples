@@ -5,6 +5,7 @@ layout: default
 nav_order: 3
 ---
 {% include mermaid.html %}
+{% include math.html %}
 
 # Example 3: Services and Action Servers
 
