@@ -11,7 +11,7 @@ sticky_navigation: true
 prev_next_buttons_location: bottom
 search_enabled: true
 hljs_style: github-gist
-logo: 'https://asset.brandfetch.io/idDdLR3C28/idBsXi0nu5.png'
+logo: './_media/ensta.png'
 
 
 markdown: kramdown
