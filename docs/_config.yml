@@ -5,6 +5,7 @@ remote_theme: carlosperate/jekyll-theme-rtd
 # Theme settings:
 site_author: ENSTA-Paris
 repo_url: "https://github.com/adnan-saood/ros-course-examples"
+base_url: "/"
 edit_on_github: true
 github_docs_folder: true
 sticky_navigation: true
