@@ -6,3 +6,242 @@ nav_order: 4
 # Example 4: Exploring a Robot Package
 
 ## Introduction
+
+This tutorial will guide students through the process of creating a new package, defining a robot using URDF with Gazebo plugins, configuring MoveIt for motion planning, and setting up a joint trajectory controller.
+
+### Step 1: Create a New ROS Package
+
+First, create a new ROS package named `prr_robot`. Open a terminal and run:
+
+```bash
+cd ~/catkin_ws/src
+catkin_create_pkg prr_robot urdf xacro rospy std_msgs sensor_msgs geometry_msgs
+```
+
+### Step 2: Populate the Package with Necessary Directories and Files
+
+Navigate to the package directory and create the necessary subdirectories:
+
+```bash
+cd ~/catkin_ws/src/prr_robot
+mkdir launch urdf config meshes
+```
+
+### Step 3: Define the Robot Description in URDF
+
+We'll use the URDF format to describe the PRR robot. Create a file named `prr_robot.urdf.xacro` in the `urdf` directory:
+
+```bash
+cd urdf
+touch prr_robot.urdf.xacro
+```
+
+Edit `prr_robot.urdf.xacro` with the following content:
+
+```xml
+<?xml version="1.0"?>
+<robot name="prr_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="link_length1" value="0.3"/>  <!-- 30cm -->
+  <xacro:property name="link_length2" value="0.2"/>  <!-- 20cm -->
+
+  <!-- Link 1 -->
+  <link name="link1">
+    <visual>
+      <geometry>
+        <mesh filename="package://prr_robot/meshes/link1.dae"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <!-- Joint 1: Prismatic -->
+  <joint name="joint1" type="prismatic">
+    <parent link="world"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="0" upper="0.5" effort="100" velocity="0.5"/>
+  </joint>
+
+  <!-- Link 2 -->
+  <link name="link2">
+    <visual>
+      <geometry>
+        <mesh filename="package://prr_robot/meshes/link2.dae"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <!-- Joint 2: Revolute -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 ${link_length1} 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1.0"/>
+  </joint>
+
+  <!-- Link 3 -->
+  <link name="link3">
+    <visual>
+      <geometry>
+        <mesh filename="package://prr_robot/meshes/link3.dae"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+  <!-- Joint 3: Revolute -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 ${link_length2} 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="100" velocity="1.0"/>
+  </joint>
+</robot>
+```
+
+### Step 4: Create Mesh Files
+
+Place your mesh files (e.g., `link1.dae`, `link2.dae`, `link3.dae`) in the `meshes` directory. If you don't have these files, you can create simple mesh files using a tool like Blender or use placeholder files.
+
+### Step 5: Create Gazebo Plugins Configuration
+
+Edit `prr_robot.urdf.xacro` to include Gazebo plugins:
+
+```xml
+<!-- Inside the robot element -->
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>/prr_robot</robotNamespace>
+  </plugin>
+</gazebo>
+
+<gazebo>
+  <plugin name="joint_state_controller" filename="libgazebo_ros_joint_state.so">
+    <robotNamespace>/prr_robot</robotNamespace>
+    <jointName>joint1</jointName>
+  </plugin>
+</gazebo>
+
+<gazebo>
+  <plugin name="prismatic_joint_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+    <robotNamespace>/prr_robot</robotNamespace>
+    <jointName>joint1</jointName>
+  </plugin>
+</gazebo>
+
+<gazebo>
+  <plugin name="revolute_joint_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+    <robotNamespace>/prr_robot</robotNamespace>
+    <jointName>joint2</jointName>
+  </plugin>
+</gazebo>
+
+<gazebo>
+  <plugin name="revolute_joint_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+    <robotNamespace>/prr_robot</robotNamespace>
+    <jointName>joint3</jointName>
+  </plugin>
+</gazebo>
+```
+
+### Step 6: Create Launch Files
+
+Create a file named `view_robot.launch` in the `launch` directory:
+
+```bash
+cd launch
+touch view_robot.launch
+```
+
+Edit `view_robot.launch` with the following content:
+
+```xml
+<launch>
+  <arg name="model" default="$(find prr_robot)/urdf/prr_robot.urdf.xacro"/>
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+  
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find prr_robot)/config/prr_robot.rviz"/>
+</launch>
+```
+
+### Step 7: Configure MoveIt
+
+Generate a MoveIt configuration for the PRR robot. Use the `moveit_setup_assistant`:
+
+```bash
+roslaunch moveit_setup_assistant setup_assistant.launch
+```
+
+Follow the GUI steps to create a new configuration package for `prr_robot`. Save the configuration in the `config` directory of your package.
+
+### Step 8: Setup Joint Trajectory Controller
+
+Create a file named `controllers.yaml` in the `config` directory:
+
+```bash
+cd config
+touch controllers.yaml
+```
+
+Edit `controllers.yaml` with the following content:
+
+```yaml
+controller_list:
+  - name: prismatic_joint_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    joints:
+      - joint1
+
+  - name: revolute_joint_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    joints:
+      - joint2
+      - joint3
+
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+```
+
+Create a launch file to start the controllers, named `controllers.launch` in the `launch` directory:
+
+```xml
+<launch>
+  <rosparam file="$(find prr_robot)/config/controllers.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" args="joint_state_controller prismatic_joint_controller revolute_joint_controller"/>
+</launch>
+```
+
+### Step 9: Build and Launch
+
+Build your package and launch it:
+
+```bash
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+roslaunch prr_robot view_robot.launch
+```
+
+This will open RViz and load your PRR robot model. You can visualize the robot and interact with it.
+
+### Step 10: Explore and Experiment
+
+Encourage students to explore the following:
+
+1. **Modify the URDF**: Change dimensions, add new links, or joints.
+2. **Gazebo Simulation**: Integrate Gazebo and create a simulation launch file.
+3. **MoveIt Configuration**: Experiment with motion planning and execute trajectories.
+4. **Controllers**: Add more controllers and understand their configurations.
+
+This tutorial provides a solid foundation for students to understand the workflow of creating and configuring a robot package in ROS1.
