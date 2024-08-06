@@ -581,6 +581,12 @@ We can now use some of the tools we discussed above to visualize the URDF file.
 - XACRO files are XML files with additional macros and parameterization capabilities.
 - The typical file extension is `.xacro`.
 
+#### Comments
+- Use XML comments to add notes or disable parts of the code:
+
+    ```xml
+    <!-- This is a comment -->
+    ```
 #### XACRO XML Namespace
 - Always include the XACRO namespace in the root element:
 
@@ -592,7 +598,7 @@ We can now use some of the tools we discussed above to visualize the URDF file.
 - Macros are defined using `<xacro:macro>` tags:
 
     ```xml
-    <xacro:macro name="macro_name">
+    <xacro:macro name="my_macro">
     <!-- Macro content -->
     </xacro:macro>
     ```
@@ -600,7 +606,7 @@ We can now use some of the tools we discussed above to visualize the URDF file.
 #### Calling Macros
 - Call a macro using the `<xacro:macro_name>` syntax:
     ```xml
-    <xacro:macro_name/>
+    <xacro:my_macro/>
     ```
 
 #### Parameters
@@ -680,12 +686,6 @@ We can now use some of the tools we discussed above to visualize the URDF file.
 
     ```bash
     rosrun xacro xacro --inorder my_robot.xacro -o my_robot.urdf
-     check_urdf my_robot.urdf
+    check_urdf my_robot.urdf
     ```
 
-#### Comments
-- Use XML comments to add notes or disable parts of the code:
-
-    ```xml
-    <!-- This is a comment -->
-    ```
