@@ -280,28 +280,28 @@ Stability analysis as an action server.
 
 #### Transfer Function
 
-A transfer function \( H(s) \) is a mathematical representation of the relationship between the input and output of a linear time-invariant (LTI) system in the Laplace domain. It is typically represented as:
+A transfer function $H(s) $ is a mathematical representation of the relationship between the input and output of a linear time-invariant (LTI) system in the Laplace domain. It is typically represented as:
 
 $$ H(s) = \frac{N(s)}{D(s)} $$
 
 where:
-- \( N(s) \) is the numerator polynomial.
-- \( D(s) \) is the denominator polynomial.
+- $ N(s) $ is the numerator polynomial.
+- $ D(s) $ is the denominator polynomial.
 
 #### Poles of the Transfer Function
 
-The poles of the transfer function are the roots of the denominator polynomial \( D(s) \). These poles determine the stability of the system.
+The poles of the transfer function are the roots of the denominator polynomial $ D(s) $. These poles determine the stability of the system.
 
 #### Stability Criteria
 
-A continuous-time LTI system is stable if all the poles of its transfer function \( H(s) \) have negative real parts. In other words, the system is stable if all the poles lie in the left-half of the complex plane. Mathematically, if \( s_i \) are the poles of \( H(s) \):
+A continuous-time LTI system is stable if all the poles of its transfer function $ H(s) $ have negative real parts. In other words, the system is stable if all the poles lie in the left-half of the complex plane. Mathematically, if $ s_i $ are the poles of $ H(s) $:
 
-\[ \text{Re}(s_i) < 0 \quad \forall i \]
+$$ \text{Re}(s_i) < 0 \quad \forall i $$
 
 #### Steps to Determine Stability
 
-1. **Find the Denominator Polynomial**: The denominator polynomial \( D(s) \) of the transfer function.
-2. **Calculate the Poles**: Solve for the roots of the polynomial \( D(s) \).
+1. **Find the Denominator Polynomial**: The denominator polynomial $ D(s) $ of the transfer function.
+2. **Calculate the Poles**: Solve for the roots of the polynomial $ D(s) $.
 3. **Check Real Parts of the Poles**: Examine the real parts of the roots:
    - If all roots have negative real parts, the system is stable.
    - If any root has a non-negative real part, the system is unstable.
@@ -310,22 +310,22 @@ A continuous-time LTI system is stable if all the poles of its transfer function
 
 Consider a transfer function:
 
-\[ H(s) = \frac{s + 5}{s^2 - s - 6} \]
+$$ H(s) = \frac{s + 5}{s^2 - s - 6} $$
 
-Here, the numerator polynomial is \( N(s) = s + 5 \) and the denominator polynomial is \( D(s) = s^2 - s - 6 \).
+Here, the numerator polynomial is $ N(s) = s + 5 $ and the denominator polynomial is $ D(s) = s^2 - s - 6 $.
 
 ##### Step 1: Find the Denominator Polynomial
 
-\[ D(s) = s^2 - s - 6 \]
+$$ D(s) = s^2 - s - 6 $$
 
-To find the poles, we solve the equation \( D(s) = 0 \) we find poles $s_1 = 3$ and $s_2 = -2$.
+To find the poles, we solve the equation $D(s) = 0$ we find poles $s_1 = 3$ and $s_2 = -2$.
 
 ##### Step 2: Check Real Parts of the Poles
 
-- \( s_1 = 3 \) (positive real part)
-- \( s_2 = -2 \) (negative real part)
+- $s_1 = 3$ (positive real part)
+- $s_2 = -2$ (negative real part)
 
-Since \( s_1 = 3 \) has a positive real part, the system is **unstable**.
+Since $s_1 = 3$ has a positive real part, the system is **unstable**.
 
 In python code, we can use `numpy.roots()` to check for stability.
 
