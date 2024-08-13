@@ -520,15 +520,15 @@ XACRO (XML Macros) is a powerful tool in ROS (Robot Operating System) for simpli
 - __Parameters__: Use variables to avoid hardcoding values.
 - __Conditional Statements__: Apply logic to include or exclude parts of the XML.
 
-### Exercise 2: Simple XACRO Macro example
+## Exercise 2: Simple XACRO Macro example
 
-#### Step 1: Install XACRO
+### Step 1: Install XACRO
 
 ```bash
 sudo apt-get install ros-noetic-xacro
 ```
 
-#### Step 2: Create XACRO file
+### Step 2: Create XACRO file
 Create a file named `simple_robot.xacro`.
 
 ```xml
@@ -566,35 +566,35 @@ Create a file named `simple_robot.xacro`.
 </robot>
 ```
 
-#### Step 3: Generate the URDF.
+### Step 3: Generate the URDF.
 ```bash
 rosrun xacro xacro simple_robot.xacro -o simple_robot.urdf
 ```
 
-#### Step 4: Visualize
+### Step 4: Visualize
 
 We can now use some of the tools we discussed above to visualize the URDF file. 
 
-### Useful XACRO Syntax
+## Useful XACRO Syntax
 
-#### Basic Syntax
+### Basic Syntax
 - XACRO files are XML files with additional macros and parameterization capabilities.
 - The typical file extension is `.xacro`.
 
-#### Comments
+### Comments
 - Use XML comments to add notes or disable parts of the code:
 
     ```xml
     <!-- This is a comment -->
     ```
-#### XACRO XML Namespace
+### XACRO XML Namespace
 - Always include the XACRO namespace in the root element:
 
     ```xml
     <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_name">
     ```
 
-#### Macros
+### Macros
 - Macros are defined using `<xacro:macro>` tags:
 
     ```xml
@@ -603,13 +603,13 @@ We can now use some of the tools we discussed above to visualize the URDF file.
     </xacro:macro>
     ```
 
-#### Calling Macros
+### Calling Macros
 - Call a macro using the `<xacro:macro_name>` syntax:
     ```xml
     <xacro:my_macro/>
     ```
 
-#### Parameters
+### Parameters
 - Define parameters within macros to make them reusable and configurable:
     ```xml
     <xacro:macro name="box_link" params="link_name box_size">
@@ -623,14 +623,14 @@ We can now use some of the tools we discussed above to visualize the URDF file.
     </xacro:macro>
     ```
 
-#### Properties
+### Properties
 - Define properties to store values and use them throughout the document:
     ```xml
     <xacro:property name="link_length" value="1.0"/>
     <xacro:property name="link_color" value="0 1 0 1"/>
     ```
 
-#### Useing Properites
+### Useing Properites
 - Access properties using `${property_name}` syntax:
     ```xml
     <material>
@@ -638,7 +638,7 @@ We can now use some of the tools we discussed above to visualize the URDF file.
     </material>
     ```
 
-#### Conditionals
+### Conditionals
 - Use `if` and `unless` conditions to include or exclude parts of the document:
     ```xml
     <xacro:if value="${use_sphere}">
@@ -654,20 +654,20 @@ We can now use some of the tools we discussed above to visualize the URDF file.
     ```
 
 
-#### Include
+### Include
 - Reuse code by including other XACRO files:
 
     ```xml
     <xacro:include filename="$(find package_name)/urdf/other_file.xacro"/>
     ```
 
-#### Command-Line Arguments
+### Command-Line Arguments
 - Pass arguments to XACRO from the command line:
     ```sh
     rosrun xacro xacro --inorder my_robot.xacro my_arg:=value
     ```
 
-#### Default Parameter Values
+### Default Parameter Values
 - Provide default values for parameters:
     ```xml
     <xacro:macro name="example_macro" params="param1:=default1 param2:=default2">
@@ -675,13 +675,13 @@ We can now use some of the tools we discussed above to visualize the URDF file.
     </xacro:macro>
     ```
 
-#### Math Expressions
+### Math Expressions
 - Perform mathematical operations directly in XACRO:
     ```xml
     <xacro:property name="half_length" value="${length / 2.0}"/>
     ```
 
-#### Debugging and Validation
+### Debugging and Validation
 - Validate XACRO files by converting them to URDF and checking for errors:
 
     ```bash

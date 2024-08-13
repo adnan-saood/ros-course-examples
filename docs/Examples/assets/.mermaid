@@ -1,0 +1,30 @@
+flowchart LR
+ subgraph Node1["Node 1"]
+        action_server(("Action Server"))
+        service(("Service"))
+        pub(["Publisher"])
+  end
+ subgraph Node2["Node 2"]
+        action_client(["Action Server Client"])
+        service_client(["Service Client"])
+        sub(["Subscriber"])
+  end
+    pub == /topic ==> sub
+    service -. /service/response .-> service_client
+    service_client == /service/request ==> service
+    action_client == /action1/goal ===> action_server
+    action_client -. /action1/cancel .-> action_server
+    action_server -. /action1/feedback .-> action_client
+    action_server == /action1/result ==> action_client
+    action_server -- /action1/status --> action_client
+    Master("Master") -- parameter --> Node1 & Node2
+     Master:::node
+    classDef node fill:#f9f,stroke:#333,stroke-width:2px
+    style action_server stroke:#00C853,fill:#C8E6C9
+    style service stroke:#FFD600,fill:#FFF9C4
+    style pub stroke:#FF6D00,fill:#FFE0B2
+    style action_client stroke:#00C853,fill:#C8E6C9
+    style service_client stroke:#FFD600,fill:#FFF9C4
+    style sub stroke:#FF6D00,fill:#FFE0B2
+    style Master stroke:#000000,fill:#FFFFFF,stroke-width:4px,stroke-dasharray: 0
+
